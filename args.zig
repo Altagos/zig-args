@@ -661,7 +661,11 @@ pub const ErrorHandling = union(enum) {
             @compileError("src_error must be a error union!");
         switch (self) {
             .silent => return src_error,
-            .print => try std.fs.File.stderr().writer().print("{}\n", .{err}),
+            .print => {
+                const bw = std.debug.lockStderrWriter(&.{});
+                defer std.debug.unlockStderrWriter();
+                nosuspend try bw.print("{}\n", .{err});
+            },
             .collect => |collection| try collection.insert(err),
             .forward => |func| try func(err),
         }
