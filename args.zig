@@ -664,7 +664,7 @@ pub const ErrorHandling = union(enum) {
             .print => {
                 const bw = std.debug.lockStderrWriter(&.{});
                 defer std.debug.unlockStderrWriter();
-                nosuspend try bw.print("{}\n", .{err});
+                nosuspend try bw.print("{any}\n", .{err});
             },
             .collect => |collection| try collection.insert(err),
             .forward => |func| try func(err),
