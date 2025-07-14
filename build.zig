@@ -6,23 +6,26 @@ pub fn build(b: *std.Build) void {
 
     const args_mod = b.addModule("args", .{
         .root_source_file = b.path("args.zig"),
+        .optimize = optimize,
+        .target = target,
     });
 
     const main_tests = b.addTest(.{
-        .root_source_file = b.path("args.zig"),
-        .optimize = optimize,
-        .target = target,
+        .root_module = args_mod,
     });
 
     const run_main_tests = b.addRunArtifact(main_tests);
 
     // Standard demo
 
-    const demo_exe = b.addExecutable(.{
-        .name = "demo",
+    const demo_mod = b.addModule("demo", .{
         .root_source_file = b.path("demo.zig"),
         .optimize = optimize,
         .target = target,
+    });
+    const demo_exe = b.addExecutable(.{
+        .name = "demo",
+        .root_module = demo_mod,
     });
     demo_exe.root_module.addImport("args", args_mod);
 
@@ -33,11 +36,14 @@ pub fn build(b: *std.Build) void {
 
     // Demo with verbs
 
-    const demo_verb_exe = b.addExecutable(.{
-        .name = "demo_verb",
+    const demo_verb_mod = b.addModule("demo_verb", .{
         .root_source_file = b.path("demo_verb.zig"),
         .optimize = optimize,
         .target = target,
+    });
+    const demo_verb_exe = b.addExecutable(.{
+        .name = "demo_verb",
+        .root_module = demo_verb_mod,
     });
     demo_verb_exe.root_module.addImport("args", args_mod);
 
